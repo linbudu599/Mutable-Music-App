@@ -1,6 +1,9 @@
 import React from "react";
 import Slider, { IBanner } from "../../components/slider";
-import RecommendList, { IRecommendItem } from "../../components/list/index";
+import RecommendList, { IRecommendItem } from "../../components/list";
+import Scroll from "../../components/scroll";
+import { Content } from "./style";
+
 function Recommend() {
   //mock 数据
   const bannerList: IBanner[] = [1, 2, 3, 4].map(item => {
@@ -23,10 +26,14 @@ function Recommend() {
   );
 
   return (
-    <div>
-      {<Slider bannerList={bannerList}></Slider>}
-      {<RecommendList recommendList={recommendList}></RecommendList>}
-    </div>
+    <Content>
+      <Scroll className="list">
+        <div>
+          <Slider bannerList={bannerList}></Slider>
+          <RecommendList recommendList={recommendList}></RecommendList>
+        </div>
+      </Scroll>
+    </Content>
   );
 }
 
