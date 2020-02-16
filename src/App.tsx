@@ -1,17 +1,21 @@
 import React from "react";
+import { Provider } from "react-redux";
 import { GlobalStyle } from "./style";
-import { renderRoutes } from "react-router-config"; //renderRoutes 读取路由配置转化为 Route 标签
+import { renderRoutes } from "react-router-config";
 import { IconStyle } from "./assets/iconfont/iconfont";
-import routes from "./routes/index";
-import { HashRouter } from "react-router-dom";
+import store from "./store/index";
+import routes from "./routes";
+import { BrowserRouter as Router } from "react-router-dom";
 
 function App() {
   return (
-    <HashRouter>
-      <GlobalStyle></GlobalStyle>
-      <IconStyle></IconStyle>
-      {renderRoutes(routes)}
-    </HashRouter>
+    <Provider store={store}>
+      <Router>
+        <GlobalStyle></GlobalStyle>
+        <IconStyle></IconStyle>
+        {renderRoutes(routes)}
+      </Router>
+    </Provider>
   );
 }
 
