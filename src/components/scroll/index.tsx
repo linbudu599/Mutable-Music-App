@@ -137,6 +137,7 @@ const Scroll: React.FC<IS> = forwardRef((props, ref) => {
   );
 });
 
+// TODO: inject default by class of ts
 Scroll.defaultProps = {
   direction: "vertical",
   click: true,
