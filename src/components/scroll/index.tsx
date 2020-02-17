@@ -27,7 +27,7 @@ interface IScroll {
 type IS = Partial<IScroll>;
 
 const Scroll: React.FC<IS> = forwardRef((props, ref) => {
-  console.log(ref);
+  // console.log(ref);
   //better-scroll 实例对象
   const [bScroll, setBScroll] = useState<BScroll | null>();
   //current 指向初始化 bs 实例需要的 DOM 元素

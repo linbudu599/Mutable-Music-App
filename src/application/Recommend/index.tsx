@@ -3,9 +3,10 @@ import Slider, { IBanner } from "../../components/slider";
 import RecommendList, { IRecommendItem } from "../../components/list";
 import Scroll from "../../components/scroll";
 import { Content } from "./style";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import * as actionTypes from "./store/actionCreators";
 
+// TODO: should declare these items?
 interface IRecommend {
   bannerList?: any;
   recommendList?: any;
@@ -14,13 +15,18 @@ interface IRecommend {
 }
 
 const Recommend: React.FC<IRecommend> = props => {
-  const { bannerList, recommendList } = props;
-  const { getBannerDataDispatch, getRecommendListDataDispatch } = props;
+  const selectedData = useSelector((state: any) => ({
+    bannerList: state.getIn(["recommend", "bannerList"]),
+    recommendList: state.getIn(["recommend", "recommendList"])
+  }));
+
+  const dispatch = useDispatch();
+  const { bannerList, recommendList } = selectedData;
   const scrollRef = useRef();
 
   useEffect(() => {
-    getBannerDataDispatch();
-    getRecommendListDataDispatch();
+    dispatch(actionTypes.getBannerList());
+    dispatch(actionTypes.getRecommendList());
     //eslint-disable-next-line
   }, []);
 
@@ -39,28 +45,4 @@ const Recommend: React.FC<IRecommend> = props => {
   );
 };
 
-// 映射 Redux 全局的 state 到组件的 props 上
-const mapStateToProps = (state: any) => ({
-  // 不要在这里将数据 toJS
-  // 不然每次 diff 比对 props 的时候都是不一样的引用，还是导致不必要的重渲染，属于滥用 immutable
-  // 仓库中是一个immutable对象，因此可以直接在其属性上调用toJS，见上面
-  bannerList: state.getIn(["recommend", "bannerList"]),
-  recommendList: state.getIn(["recommend", "recommendList"])
-});
-
-// 映射 dispatch 到 props 上
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    getBannerDataDispatch() {
-      dispatch(actionTypes.getBannerList());
-    },
-    getRecommendListDataDispatch() {
-      dispatch(actionTypes.getRecommendList());
-    }
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(React.memo(Recommend));
+export default React.memo(Recommend);
