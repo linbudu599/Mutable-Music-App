@@ -10,13 +10,13 @@ Make A Mutable App By ImmutaJs😼
 
 - react-router-config
 
-实现命令式路由，很像Vue-router
+实现命令式路由，很像 Vue-router
 
 - forwardRef 与 useImperativeHandle
 
-  - useRef，使函数式组件也能够享受到获取DOM元素或者自定义组件，父组件获取子组件引用而后调用子组件方法，如focus等。
-  - forwardRef，可以获取父组件的ref实例作为子组件的参数（与props同级），然后再把这个ref绑定到自己内部节点，就可以实现ref的透传了！
-  - useImperativeHandle，常与forwardRef搭配使用，可以控制向父组件暴露的属性以及方法，第一个参数即为forwardRef包裹后得到的父组件ref实例。
+  - useRef，使函数式组件也能够享受到获取 DOM 元素或者自定义组件，父组件获取子组件引用而后调用子组件方法，如 focus 等。
+  - forwardRef，可以获取父组件的 ref 实例作为子组件的参数（与 props 同级），然后再把这个 ref 绑定到自己内部节点，就可以实现 ref 的透传了！
+  - useImperativeHandle，常与 forwardRef 搭配使用，可以控制向父组件暴露的属性以及方法，第一个参数即为 forwardRef 包裹后得到的父组件 ref 实例。
 
     ```tsx
     const Test: FC = (): JSX.Element => {
@@ -66,7 +66,6 @@ Make A Mutable App By ImmutaJs😼
     export const TestChildForward: ForwardRefExoticComponent<any> = memo(
       forwardRef(TestChild)
     );
-
     ```
 
 ## 为什么是...？
@@ -80,3 +79,16 @@ Make A Mutable App By ImmutaJs😼
 - 支持预处理器如嵌套语法
 - CSS 代码现在可以处理逻辑了！
 - 语义化，总觉得 Html5 的语义化少了点什么吧？
+
+## Immutable.JS
+
+- fromJS/toJs
+- get/getIn
+
+  ```js
+  let jsObj = { a: { b: 1 } };
+  let res = jsObj.a.b;
+  //immutable 对象
+  let immutableObj = fromJS(jsObj);
+  let res = immutableObj.getIn(["a", "b"]); // 注意传入的是一个数组
+  ```

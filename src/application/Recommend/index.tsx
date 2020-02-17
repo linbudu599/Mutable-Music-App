@@ -1,40 +1,66 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Slider, { IBanner } from "../../components/slider";
 import RecommendList, { IRecommendItem } from "../../components/list";
 import Scroll from "../../components/scroll";
 import { Content } from "./style";
+import { connect } from "react-redux";
+import * as actionTypes from "./store/actionCreators";
 
-function Recommend() {
-  //mock 数据
-  const bannerList: IBanner[] = [1, 2, 3, 4].map(item => {
-    return {
-      imageUrl:
-        "http://p1.music.126.net/ZYLJ2oZn74yUz5x8NBGkVA==/109951164331219056.jpg"
-    };
-  });
+interface IRecommend {
+  bannerList?: any;
+  recommendList?: any;
+  getBannerDataDispatch?: any;
+  getRecommendListDataDispatch?: any;
+}
 
-  const recommendList: IRecommendItem[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
-    (item, index) => {
-      return {
-        id: index,
-        picUrl:
-          "https://p1.music.126.net/fhmefjUfMD-8qtj3JKeHbA==/18999560928537533.jpg",
-        playCount: 17171122,
-        name: "朴树、许巍、李健、郑钧、老狼、赵雷"
-      };
-    }
-  );
+const Recommend: React.FC<IRecommend> = props => {
+  const { bannerList, recommendList } = props;
+  const { getBannerDataDispatch, getRecommendListDataDispatch } = props;
+  const scrollRef = useRef();
+
+  useEffect(() => {
+    getBannerDataDispatch();
+    getRecommendListDataDispatch();
+    //eslint-disable-next-line
+  }, []);
+
+  const bannerListJS = bannerList ? bannerList.toJS() : [];
+  const recommendListJS = recommendList ? recommendList.toJS() : [];
 
   return (
     <Content>
-      <Scroll className="list">
+      <Scroll className="list" ref={scrollRef}>
         <div>
-          <Slider bannerList={bannerList}></Slider>
-          <RecommendList recommendList={recommendList}></RecommendList>
+          <Slider bannerList={bannerListJS}></Slider>
+          <RecommendList recommendList={recommendListJS}></RecommendList>
         </div>
       </Scroll>
     </Content>
   );
-}
+};
 
-export default React.memo(Recommend);
+// 映射 Redux 全局的 state 到组件的 props 上
+const mapStateToProps = (state: any) => ({
+  // 不要在这里将数据 toJS
+  // 不然每次 diff 比对 props 的时候都是不一样的引用，还是导致不必要的重渲染，属于滥用 immutable
+  // 仓库中是一个immutable对象，因此可以直接在其属性上调用toJS，见上面
+  bannerList: state.getIn(["recommend", "bannerList"]),
+  recommendList: state.getIn(["recommend", "recommendList"])
+});
+
+// 映射 dispatch 到 props 上
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    getBannerDataDispatch() {
+      dispatch(actionTypes.getBannerList());
+    },
+    getRecommendListDataDispatch() {
+      dispatch(actionTypes.getRecommendList());
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(React.memo(Recommend));
