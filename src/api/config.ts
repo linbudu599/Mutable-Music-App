@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 export const baseURL = "http://localhost:4000";
 
@@ -183,5 +183,21 @@ export const alphaTypes = [
     name: "Z"
   }
 ];
+
+export const getHotSingerListRequest = (
+  count: number
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get(`/top/artists?offset=${count}`);
+};
+
+export const getSingerListRequest = (
+  category: string,
+  alpha: string,
+  count: number
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get(
+    `/artist/list?cat=${category}&initial=${alpha.toLowerCase()}&offset=${count}`
+  );
+};
 
 export { axiosInstance };
