@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Slider, { IBanner } from "../../components/slider";
 import RecommendList, { IRecommendItem } from "../../components/list";
 import Loading from "../../baseUI/loading/index";
-import Scroll from "../../components/scroll";
+import Scroll from "../../baseUI/scroll";
 import { Content } from "./style";
 import { useSelector, useDispatch } from "react-redux";
 import { forceCheck } from "react-lazyload";
