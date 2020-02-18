@@ -6,8 +6,10 @@ import React, {
   useImperativeHandle,
   RefObject
 } from "react";
+import Loading from "../loading";
+import LoadingV2 from "../loading-bottom";
 import BScroll from "better-scroll";
-import { ScrollContainer } from "./style";
+import { ScrollContainer, PullUpLoading, PullDownLoading } from "./style";
 
 interface IScroll {
   direction: "vertical" | "horizental"; // 滚动方向
@@ -36,8 +38,8 @@ const Scroll: React.FC<IS> = forwardRef((props, ref) => {
     direction,
     click,
     refresh,
-    // pullUpLoading,
-    // pullDownLoading,
+    pullUpLoading,
+    pullDownLoading,
     bounceTop,
     bounceBottom,
     children
@@ -128,12 +130,27 @@ const Scroll: React.FC<IS> = forwardRef((props, ref) => {
     }
   }));
 
+  const PullUpdisplayStyle = pullUpLoading
+    ? { display: "" }
+    : { display: "none" };
+  const PullDowndisplayStyle = pullDownLoading
+    ? { display: "" }
+    : { display: "none" };
+
   return (
     <>
       <ScrollContainer
         ref={(scrollContaninerRef as unknown) as RefObject<HTMLDivElement>}
       >
         {children}
+        {/* 滑到底部加载动画 */}
+        <PullUpLoading style={PullUpdisplayStyle}>
+          <Loading></Loading>
+        </PullUpLoading>
+        {/* 顶部下拉刷新动画 */}
+        <PullDownLoading style={PullDowndisplayStyle}>
+          <LoadingV2></LoadingV2>
+        </PullDownLoading>
       </ScrollContainer>
     </>
   );

@@ -30,9 +30,13 @@ const LoadingWrapper = styled.div`
   }
 `;
 
-const Loading: React.FC = () => {
+interface ILoading {
+  show?: boolean;
+}
+
+const Loading: React.FC<ILoading> = ({ show = true }) => {
   return (
-    <LoadingWrapper>
+    <LoadingWrapper style={show ? { display: "" } : { display: "none" }}>
       <div></div>
       <div></div>
     </LoadingWrapper>
