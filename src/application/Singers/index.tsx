@@ -14,26 +14,22 @@ import {
   refreshMoreHotSingerList
 } from "./store/actionCreators";
 import Scroll from "./../../baseUI/scroll/index";
-import { connect, useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import LazyLoad, { forceCheck } from "react-lazyload";
 
-interface ISingerList {
-  singerList: any[];
-  enterLoading: boolean;
-  pullUpLoading: boolean;
-  pullDownLoading: boolean;
-  pageCount: number;
-  getHotSingerDispatch: any;
-  updateDispatch: any;
-  pullDownRefreshDispatch: any;
-  pullUpRefreshDispatch: any;
-}
-
-type IS = Partial<ISingerList>;
-
-const Singers: React.FC<IS> = props => {
+const Singers: React.FC = () => {
   let [category, setCategory] = useState<string>("");
   let [alpha, setAlpha] = useState<string>("");
+
+  const data = useSelector((state: any) => ({
+    singerList: state.getIn(["singers", "singerList"]),
+    enterLoading: state.getIn(["singers", "enterLoading"]),
+    pullUpLoading: state.getIn(["singers", "pullUpLoading"]),
+    pullDownLoading: state.getIn(["singers", "pullDownLoading"]),
+    pageCount: state.getIn(["singers", "pageCount"])
+  }));
+
+  const dispatch = useDispatch();
 
   const {
     singerList,
@@ -41,36 +37,45 @@ const Singers: React.FC<IS> = props => {
     pullUpLoading,
     pullDownLoading,
     pageCount
-  } = props;
-
-  const {
-    getHotSingerDispatch,
-    updateDispatch,
-    pullDownRefreshDispatch,
-    pullUpRefreshDispatch
-  } = props;
+  } = data;
 
   useEffect(() => {
-    getHotSingerDispatch();
+    dispatch(getHotSingerList());
     // eslint-disable-next-line
   }, []);
 
   let handleUpdateCatetory = (val: string): void => {
     setCategory(val);
-    updateDispatch(val, alpha);
+    dispatch(changePageCount(0)); //由于改变了分类，所以pageCount清零
+    dispatch(changeEnterLoading(true)); //loading，现在实现控制逻辑，效果实现放到下一节，后面的loading同理
+    dispatch(getSingerList(val, alpha));
   };
 
   let handleUpdateAlpha = (val: string): void => {
     setAlpha(val);
-    updateDispatch(category, val);
+    dispatch(changePageCount(0));
+    dispatch(changeEnterLoading(true));
+    dispatch(getSingerList(category, val));
   };
 
   const handlePullUp = () => {
-    pullUpRefreshDispatch(category, alpha, category === "", pageCount);
+    dispatch(changePullUpLoading(true));
+    dispatch(changePageCount(pageCount + 1));
+    if (category === "") {
+      dispatch(refreshMoreHotSingerList());
+    } else {
+      dispatch(refreshMoreSingerList(category, alpha));
+    }
   };
 
   const handlePullDown = () => {
-    pullDownRefreshDispatch(category, alpha);
+    dispatch(changePullDownLoading(true));
+    dispatch(changePageCount(0)); //属于重新获取数据
+    if (category === "" && alpha === "") {
+      dispatch(getHotSingerList());
+    } else {
+      dispatch(getSingerList(category, alpha));
+    }
   };
 
   const renderSingerList = () => {
@@ -140,53 +145,4 @@ const Singers: React.FC<IS> = props => {
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  singerList: state.getIn(["singers", "singerList"]),
-  enterLoading: state.getIn(["singers", "enterLoading"]),
-  pullUpLoading: state.getIn(["singers", "pullUpLoading"]),
-  pullDownLoading: state.getIn(["singers", "pullDownLoading"]),
-  pageCount: state.getIn(["singers", "pageCount"])
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    getHotSingerDispatch() {
-      dispatch(getHotSingerList());
-    },
-    updateDispatch(category: string, alpha: string) {
-      dispatch(changePageCount(0)); //由于改变了分类，所以pageCount清零
-      dispatch(changeEnterLoading(true)); //loading，现在实现控制逻辑，效果实现放到下一节，后面的loading同理
-      dispatch(getSingerList(category, alpha));
-    },
-    // 滑到最底部刷新部分的处理
-    pullUpRefreshDispatch(
-      category: string,
-      alpha: string,
-      hot: boolean,
-      count: number
-    ) {
-      dispatch(changePullUpLoading(true));
-      dispatch(changePageCount(count + 1));
-      if (hot) {
-        dispatch(refreshMoreHotSingerList());
-      } else {
-        dispatch(refreshMoreSingerList(category, alpha));
-      }
-    },
-    //顶部下拉刷新
-    pullDownRefreshDispatch(category: string, alpha: string) {
-      dispatch(changePullDownLoading(true));
-      dispatch(changePageCount(0)); //属于重新获取数据
-      if (category === "" && alpha === "") {
-        dispatch(getHotSingerList());
-      } else {
-        dispatch(getSingerList(category, alpha));
-      }
-    }
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(React.memo(Singers));
+export default React.memo(Singers);
