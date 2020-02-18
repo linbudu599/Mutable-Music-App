@@ -30,6 +30,7 @@ export const getSingerListRequest = (
   alpha: string,
   count: number
 ) => {
+  console.log(category, alpha, count);
   return axiosInstance.get(
     `/artist/list?cat=${category}&initial=${alpha.toLowerCase()}&offset=${count}`
   );

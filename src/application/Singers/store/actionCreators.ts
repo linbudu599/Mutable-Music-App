@@ -111,21 +111,7 @@ export const getSingerList = (category: any, alpha: any) => {
 
 //加载更多歌手
 export const refreshMoreSingerList = (category: any, alpha: any) => {
-  return (
-    dispatch: (arg0: { type: string; data: any }) => void,
-    getState: () => {
-      (): any;
-      new (): any;
-      getIn: {
-        (arg0: string[]): {
-          (): any;
-          new (): any;
-          toJS: { (): any; new (): any };
-        };
-        new (): any;
-      };
-    }
-  ) => {
+  return (dispatch: any, getState: any) => {
     const pageCount = getState().getIn(["singers", "pageCount"]);
     const singerList = getState()
       .getIn(["singers", "singerList"])

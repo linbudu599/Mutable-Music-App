@@ -12,7 +12,6 @@ interface IHorizon {
 
 const Horizen: React.FC<IHorizon> = ({ list, oldVal, title, handleClick }) => {
   const Category = useRef(null);
-
   useEffect(() => {
     let categoryDOM = (Category.current as unknown) as HTMLElement;
     let tagElems = categoryDOM.querySelectorAll("span");
@@ -22,7 +21,7 @@ const Horizen: React.FC<IHorizon> = ({ list, oldVal, title, handleClick }) => {
     });
     // 动态生成宽度
     categoryDOM.style.width = `${totalWidth}px`;
-  }, [Category]);
+  }, []);
 
   return (
     <>

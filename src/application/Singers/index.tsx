@@ -14,38 +14,8 @@ import {
   refreshMoreHotSingerList
 } from "./store/actionCreators";
 import Scroll from "./../../baseUI/scroll/index";
-import { connect } from "react-redux";
-
-const singerList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(item => {
-  return {
-    picUrl:
-      "https://p2.music.126.net/uTwOm8AEFFX_BYHvfvFcmQ==/109951164232057952.jpg",
-    name: "隔壁老樊",
-    accountId: 277313426
-  };
-});
-
-const renderSingerList = () => {
-  return (
-    <List>
-      {singerList.map((item, index) => {
-        return (
-          <ListItem key={item.accountId + "" + index}>
-            <div className="img_wrapper">
-              <img
-                src={`${item.picUrl}?param=300x300`}
-                width="100%"
-                height="100%"
-                alt="music"
-              />
-            </div>
-            <span className="name">{item.name}</span>
-          </ListItem>
-        );
-      })}
-    </List>
-  );
-};
+import { connect, useSelector, useDispatch } from "react-redux";
+import LazyLoad, { forceCheck } from "react-lazyload";
 
 interface ISingerList {
   singerList: any[];
@@ -85,14 +55,14 @@ const Singers: React.FC<IS> = props => {
     // eslint-disable-next-line
   }, []);
 
-  let handleUpdateAlpha = (val: string): void => {
-    setAlpha(val);
-    updateDispatch(category, val);
-  };
-
   let handleUpdateCatetory = (val: string): void => {
     setCategory(val);
     updateDispatch(val, alpha);
+  };
+
+  let handleUpdateAlpha = (val: string): void => {
+    setAlpha(val);
+    updateDispatch(category, val);
   };
 
   const handlePullUp = () => {
@@ -102,12 +72,50 @@ const Singers: React.FC<IS> = props => {
   const handlePullDown = () => {
     pullDownRefreshDispatch(category, alpha);
   };
+
+  const renderSingerList = () => {
+    // @ts-ignore
+    const list = singerList ? singerList.toJS() : [];
+    return (
+      <List>
+        {list.map((item: any, index: number) => {
+          return (
+            <ListItem key={item.accountId + "" + index}>
+              <div className="img_wrapper">
+                <LazyLoad
+                  placeholder={
+                    <img
+                      width="100%"
+                      height="100%"
+                      src={require("./music.png")}
+                      // src={require("./singer.png")}
+                      alt="music"
+                    />
+                  }
+                >
+                  <img
+                    src={`${item.picUrl}?param=300x300`}
+                    width="100%"
+                    height="100%"
+                    alt="music"
+                  />
+                </LazyLoad>
+              </div>
+              <span className="name">{item.name}</span>
+            </ListItem>
+          );
+        })}
+      </List>
+    );
+  };
   return (
     <NavContainer>
       <Horizen
         list={categoryTypes}
         title={"分类 (默认热门):"}
-        handleClick={(val: string) => handleUpdateCatetory(val)}
+        handleClick={(val: string) => {
+          handleUpdateCatetory(val);
+        }}
         oldVal={category}
       ></Horizen>
       <Horizen
@@ -122,6 +130,7 @@ const Singers: React.FC<IS> = props => {
           pullDown={handlePullDown}
           pullUpLoading={pullUpLoading}
           pullDownLoading={pullDownLoading}
+          onScroll={forceCheck}
         >
           {renderSingerList()}
         </Scroll>
@@ -144,13 +153,18 @@ const mapDispatchToProps = (dispatch: any) => {
     getHotSingerDispatch() {
       dispatch(getHotSingerList());
     },
-    updateDispatch({ category, alpha }: any) {
+    updateDispatch(category: string, alpha: string) {
       dispatch(changePageCount(0)); //由于改变了分类，所以pageCount清零
       dispatch(changeEnterLoading(true)); //loading，现在实现控制逻辑，效果实现放到下一节，后面的loading同理
       dispatch(getSingerList(category, alpha));
     },
     // 滑到最底部刷新部分的处理
-    pullUpRefreshDispatch({ category, alpha, hot, count }: any) {
+    pullUpRefreshDispatch(
+      category: string,
+      alpha: string,
+      hot: boolean,
+      count: number
+    ) {
       dispatch(changePullUpLoading(true));
       dispatch(changePageCount(count + 1));
       if (hot) {
@@ -160,7 +174,7 @@ const mapDispatchToProps = (dispatch: any) => {
       }
     },
     //顶部下拉刷新
-    pullDownRefreshDispatch({ category, alpha }: any) {
+    pullDownRefreshDispatch(category: string, alpha: string) {
       dispatch(changePullDownLoading(true));
       dispatch(changePageCount(0)); //属于重新获取数据
       if (category === "" && alpha === "") {

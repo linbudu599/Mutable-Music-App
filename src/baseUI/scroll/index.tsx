@@ -4,12 +4,14 @@ import React, {
   useRef,
   useEffect,
   useImperativeHandle,
-  RefObject
+  RefObject,
+  useMemo
 } from "react";
 import Loading from "../loading";
 import LoadingV2 from "../loading-bottom";
 import BScroll from "better-scroll";
 import { ScrollContainer, PullUpLoading, PullDownLoading } from "./style";
+import { debounce } from "../../api/util";
 
 interface IScroll {
   direction: "vertical" | "horizental"; // 滚动方向
@@ -45,6 +47,14 @@ const Scroll: React.FC<IS> = forwardRef((props, ref) => {
     children
   } = props;
   const { pullUp, pullDown, onScroll } = props;
+
+  let pullUpDebounce = useMemo(() => {
+    return debounce(pullUp as () => {}, 300);
+  }, [pullUp]);
+
+  let pullDownDebounce = useMemo(() => {
+    return debounce(pullDown as () => {}, 300);
+  }, [pullDown]);
 
   // 每次重渲染刷新BS实例
   useEffect(() => {
@@ -91,13 +101,13 @@ const Scroll: React.FC<IS> = forwardRef((props, ref) => {
     bScroll.on("touchEnd", (pos: { y: number }) => {
       // 判断用户的下拉动作
       if (pos.y > 50) {
-        pullDown();
+        pullDownDebounce();
       }
     });
     return () => {
       bScroll.off("touchEnd");
     };
-  }, [pullDown, bScroll]);
+  }, [pullDown, bScroll, pullDownDebounce]);
 
   // 下拉
   useEffect(() => {
@@ -105,13 +115,13 @@ const Scroll: React.FC<IS> = forwardRef((props, ref) => {
     bScroll.on("scrollEnd", () => {
       // 判断是否滑动到了底部
       if (bScroll.y <= bScroll.maxScrollY + 100) {
-        pullUp();
+        pullUpDebounce();
       }
     });
     return () => {
       bScroll.off("scrollEnd");
     };
-  }, [pullUp, bScroll]);
+  }, [pullUp, bScroll, pullUpDebounce]);
 
   // // 一般和 forwardRef 一起使用，ref 已经在 forWardRef 中默认传入
   useImperativeHandle(ref, () => ({
