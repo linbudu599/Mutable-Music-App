@@ -40,7 +40,9 @@ const Singers: React.FC = () => {
   } = data;
 
   useEffect(() => {
-    dispatch(getHotSingerList());
+    if(!singerList.size){
+      dispatch(getHotSingerList());
+    }
     // eslint-disable-next-line
   }, []);
 

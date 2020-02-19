@@ -13,10 +13,10 @@ interface Result {
   result: string;
 }
 
+type PromiseRes = Promise<AxiosResponse<any> & Result>;
+
 export const getRecommendListRequest = () => {
-  return axiosInstance.get("/personalized") as Promise<
-    AxiosResponse<any> & Result
-  >;
+  return axiosInstance.get("/personalized") as PromiseRes;
 };
 
 export const getHotSingerListRequest = (
@@ -34,4 +34,14 @@ export const getSingerListRequest = (
   return axiosInstance.get(
     `/artist/list?cat=${category}&initial=${alpha.toLowerCase()}&offset=${count}`
   );
+};
+
+interface IList {
+  list: any[];
+}
+
+export const getRankListRequest = () => {
+  return axiosInstance.get(`/toplist/detail`) as Promise<
+    AxiosResponse<any> & IList
+  >;
 };

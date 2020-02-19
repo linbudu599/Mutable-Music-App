@@ -33,11 +33,11 @@ export const getBannerList = () => {
 
 // 另外在获取推荐歌单后，应把 loading 状态改为 false
 export const getRecommendList = () => {
-  return (dispatch: (arg0: { type: string; data: any }) => void) => {
+  return (dispatch: (action: { type: string; data: object }) => void) => {
     getRecommendListRequest()
       .then(data => {
         dispatch(changeRecommendList(data.result));
-        dispatch(changeEnterLoading(false)); // 改变 loading
+        dispatch(changeEnterLoading(false));
       })
       .catch(() => {
         console.log("推荐歌单数据传输错误");
