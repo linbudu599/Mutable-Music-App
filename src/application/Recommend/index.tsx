@@ -55,9 +55,9 @@ const Recommend: React.FC<IRecommend> = props => {
           <Slider bannerList={bannerListJS}></Slider>
           <RecommendList recommendList={recommendListJS}></RecommendList>
         </div>
-        {enterLoading ? <Loading></Loading> : null}
-        {renderRoutes(props.route.routes)}
       </Scroll>
+      {enterLoading ? <Loading></Loading> : null}
+      {renderRoutes(props.route.routes)}
     </Content>
   );
 };
