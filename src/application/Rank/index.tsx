@@ -25,11 +25,10 @@ const Rank: React.FC<IRank> = props => {
   }));
 
   const { rankList, loading } = data;
-
   let list = rankList ? rankList.toJS() : [];
 
   let globalStartIndex = filterIndex(list);
-
+  console.log(list);
   let officialList = list.slice(0, globalStartIndex);
   let globalList = list.slice(globalStartIndex);
 
@@ -39,7 +38,7 @@ const Rank: React.FC<IRank> = props => {
         {list.map((item: any) => {
           return (
             <ListItem
-              key={item.coverImgId}
+              key={`${Math.random()}-${item.coverImgId}`}
               tracks={item.tracks}
               onClick={() => enterDetail(item.name)}
             >

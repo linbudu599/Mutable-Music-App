@@ -7,13 +7,14 @@ import { Content } from "./style";
 import { useSelector, useDispatch } from "react-redux";
 import { forceCheck } from "react-lazyload";
 import * as actionTypes from "./store/actionCreators";
-
+import { renderRoutes } from "react-router-config";
 // TODO: should declare these items?
 interface IRecommend {
   bannerList?: any;
   recommendList?: any;
   getBannerDataDispatch?: any;
   getRecommendListDataDispatch?: any;
+  route: any;
 }
 
 const Recommend: React.FC<IRecommend> = props => {
@@ -25,7 +26,6 @@ const Recommend: React.FC<IRecommend> = props => {
 
   const dispatch = useDispatch();
   const { bannerList, recommendList, enterLoading } = selectedData;
-  const scrollRef = useRef();
 
   useEffect(() => {
     dispatch(actionTypes.getBannerList());
@@ -56,6 +56,7 @@ const Recommend: React.FC<IRecommend> = props => {
           <RecommendList recommendList={recommendListJS}></RecommendList>
         </div>
         {enterLoading ? <Loading></Loading> : null}
+        {renderRoutes(props.route.routes)}
       </Scroll>
     </Content>
   );

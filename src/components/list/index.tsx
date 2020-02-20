@@ -2,7 +2,7 @@ import React from "react";
 import { ListWrapper, ListItem, List } from "./style";
 import { getCount } from "../../api/util";
 import LazyLoad from "react-lazyload";
-
+import { withRouter } from "react-router-dom";
 export interface IRecommendItem {
   id: number;
   picUrl: string;
@@ -12,16 +12,23 @@ export interface IRecommendItem {
 
 interface IRecommendList {
   recommendList: IRecommendItem[];
+  history: any;
 }
 
-const RecommendList: React.FC<IRecommendList> = ({ recommendList }) => {
+const RecommendList: React.FC<IRecommendList> = ({
+  recommendList,
+  history
+}) => {
+  const enterDetail = (id: number) => {
+    history.push(`/recommend/${id}`);
+  };
   return (
     <ListWrapper>
       <h1 className="title"> 推荐歌单 </h1>
       <List>
         {recommendList.map((item, index) => {
           return (
-            <ListItem key={item.id + index}>
+            <ListItem key={item.id} onClick={() => enterDetail(item.id)}>
               <div className="img_wrapper">
                 {/* 提供遮罩，作为阴影衬托文字 */}
                 <div className="decorate"></div>
@@ -57,4 +64,5 @@ const RecommendList: React.FC<IRecommendList> = ({ recommendList }) => {
   );
 };
 
-export default React.memo(RecommendList);
+// @ts-ignore
+export default React.memo(withRouter(RecommendList));
